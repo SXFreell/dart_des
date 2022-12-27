@@ -207,10 +207,10 @@ class DES {
     for (i = 0; i < iterator; i++) {
       String tempData = data.substring(i * 16 + 0, i * 16 + 16);
       String strByte = hexToBt64(tempData);
-      List<int> intByte = [];
+      List<int> intByte = List.filled(64, 0);
       int j = 0;
       for (j = 0; j < 64; j++) {
-        intByte.add(int.parse(strByte.substring(j, j + 1)));
+        intByte[i] = int.parse(strByte.substring(j, j + 1));
       }
       List<int> decByte=[];
       if (firstKey != null &&
@@ -270,16 +270,16 @@ class DES {
 * return bit array(it's length % 64 = 0) 
 */
   static List<List<int>> getKeyBytes(key) {
-    List<List<int>> keyBytes = [];
     int leng = key.length;
     int iterator = leng ~/ 4;
     int remainder = leng % 4;
+    List<List<int>> keyBytes = remainder > 0 ? List.filled(iterator+1, List.filled(64, 0)) : List.filled(iterator, List.filled(64, 0));
     int i = 0;
     for (i = 0; i < iterator; i++) {
-      keyBytes.add(strToBt(key.substring(i * 4, i * 4 + 4)));
+      keyBytes[i] = strToBt(key.substring(i * 4, i * 4 + 4));
     }
     if (remainder > 0) {
-      keyBytes.add(strToBt(key.substring(i * 4, leng)));
+      keyBytes[i] = strToBt(key.substring(i * 4, leng));
     }
     return keyBytes;
   }
@@ -301,7 +301,7 @@ class DES {
           for (m = 15; m > j; m--) {
             pow *= 2;
           }
-          bt[16 * i + j] = k ~/ pow % 2;
+          bt[16 * i + j] = (k ~/ pow) % 2;
         }
       }
       for (p = leng; p < 4; p++) {
@@ -311,7 +311,7 @@ class DES {
           for (m = 15; m > q; m--) {
             pow *= 2;
           }
-          bt[16 * p + q] = k ~/ pow % 2;
+          bt[16 * p + q] = (k ~/ pow) % 2;
         }
       }
     } else {
@@ -322,7 +322,7 @@ class DES {
           for (int m = 15; m > j; m--) {
             pow *= 2;
           }
-          bt[16 * i + j] = k ~/ pow % 2;
+          bt[16 * i + j] = (k ~/ pow) % 2;
         }
       }
     }
@@ -881,7 +881,7 @@ class DES {
 */
   static List<List<int>>? generateKeys(keyByte) {
     List<int> key = List.filled(56, 0);
-    List<List<int>> keys = List.filled(16, []);
+    List<List<int>> keys = List.filled(16, List.filled(48, 0));
 
     List<int> loop = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
 
@@ -954,88 +954,7 @@ class DES {
       tempKey[45] = key[35];
       tempKey[46] = key[28];
       tempKey[47] = key[31];
-      switch (i) {
-        case 0:
-          for (int m = 0; m < 48; m++) {
-            keys[0].add(tempKey[m]);
-          }
-          break;
-        case 1:
-          for (int m = 0; m < 48; m++) {
-            keys[1].add(tempKey[m]);
-          }
-          break;
-        case 2:
-          for (int m = 0; m < 48; m++) {
-            keys[2].add(tempKey[m]);
-          }
-          break;
-        case 3:
-          for (int m = 0; m < 48; m++) {
-            keys[3].add(tempKey[m]);
-          }
-          break;
-        case 4:
-          for (int m = 0; m < 48; m++) {
-            keys[4].add(tempKey[m]);
-          }
-          break;
-        case 5:
-          for (int m = 0; m < 48; m++) {
-            keys[5].add(tempKey[m]);
-          }
-          break;
-        case 6:
-          for (int m = 0; m < 48; m++) {
-            keys[6].add(tempKey[m]);
-          }
-          break;
-        case 7:
-          for (int m = 0; m < 48; m++) {
-            keys[7].add(tempKey[m]);
-          }
-          break;
-        case 8:
-          for (int m = 0; m < 48; m++) {
-            keys[8].add(tempKey[m]);
-          }
-          break;
-        case 9:
-          for (int m = 0; m < 48; m++) {
-            keys[9].add(tempKey[m]);
-          }
-          break;
-        case 10:
-          for (int m = 0; m < 48; m++) {
-            keys[10].add(tempKey[m]);
-          }
-          break;
-        case 11:
-          for (int m = 0; m < 48; m++) {
-            keys[11].add(tempKey[m]);
-          }
-          break;
-        case 12:
-          for (int m = 0; m < 48; m++) {
-            keys[12].add(tempKey[m]);
-          }
-          break;
-        case 13:
-          for (int m = 0; m < 48; m++) {
-            keys[13].add(tempKey[m]);
-          }
-          break;
-        case 14:
-          for (int m = 0; m < 48; m++) {
-            keys[14].add(tempKey[m]);
-          }
-          break;
-        case 15:
-          for (int m = 0; m < 48; m++) {
-            keys[15].add(tempKey[m]);
-          }
-          break;
-      }
+      keys[i] = tempKey;
     }
     return keys;
   }
